@@ -128,10 +128,13 @@ Basic metadata for hotels
 
 Itineraries received in response to requests by Hopper on the behalf of our users.
 
+`event.id` and `trip_index` together form a primary key that can be joined with `internal_flight_segments`.
+
 **Partitioned By** : `received_date`, `trip_type`
 
 | Columns | Data Type | Description |
 |-|-|-|
+| `event.id` | `string` | A source-specific unique ID for this shop (list of trips). |
 | `trip_index` | `integer` | Trip index (row number) within the original shop (list of trips) |
 | `origin` | `string` |  |
 | `destination` | `string` |  |
@@ -220,12 +223,13 @@ Itineraries received in response to requests by Hopper on the behalf of our user
 
 ### internal_flight_segments
 
-All segments (legs) within each trip of a shop, joinable with `internal_flight_trips`.
+All segments (legs) within each trip of a shop, joinable with `internal_flight_trips` using the combination of `trip_index` and `event.id` as a foreign key.
 
 **Partitioned By** : `received_date`, `trip_type`
 
 | Columns | Data Type | Description |
 |-|-|-|
+| `event.id` | `string` | A source-specific unique ID for this shop (list of trips). |
 | `trip_index` | `integer` | Index of this trip within the shop event |
 | `segment_index` | `integer` | Index of this slice within the trip |
 | `origin` | `string` | Origin airport for this slice |
