@@ -3,18 +3,18 @@ Hopper travel hackathon (2019)
 
 # Hackathon Guide
 
-* [List of schemas](#schemas)
+* [List of schemas](#List-of-schemas)
     * [Pricing](#pricing)
-        * [production_internal_trips_1pct_v3, production_kiwi_trips_1pct_v3](#production-internal-trips-1pct-v3-production-kiwi-trips-1pct-v3)
-        * [production_internal_segments_1pct_v3, production_kiwi_segments_1pct_v3](#production-internal-segments-1pct-v3-production-kiwi-segments-1pct-v3)
+        * [production_internal_trips_10pct_v3](#production_internal_trips_10pct_v3)
+        * [production_internal_segments_10pct_v3](#production_internal_segments_10pct_v3)
     * [Metadata](#metadata)
         * [airports_v9](#airports-v9)
-        * [innovata_long](#innovata-long)
+        * [innovata_long](#innovata_long)
     * [Geotables](#geotables)
-        * [geotables_hotel_metadata](#geotables-hotel-metadata)
-        * [geotables_hotel_market_xref](#geotables-hotel-market-xref)
+        * [geotables_hotel_metadata](#geotables_hotel_metadata)
+        * [geotables_hotel_market_xref](#geotables_hotel_market_xref)
 * [Resources](#resources)
-    * [Google Cloud tutorials and documentation](#gcp)
+    * [Google Cloud tutorials and documentation](#Google-Cloud-tutorials-and-documentation)
 
 # List of schemas
 
@@ -24,7 +24,7 @@ Price history for air from active shopping plus passive shadow traffic, and hote
 
 ### Tables
 
-#### production_internal_trips_1pct_v3, production_kiwi_trips_1pct_v3
+#### production_internal_trips_10pct_v3
 
 All trips (itineraries) from each shop, for a 1% sample of `event.id`s
 
@@ -119,7 +119,7 @@ All trips (itineraries) from each shop, for a 1% sample of `event.id`s
 | `cities.same_destination` | `boolean` | Whether slices coincide at destination |
 | `cities.is_roundtrip` | `boolean` |  |
 
-#### production_internal_segments_1pct_v3, production_kiwi_segments_1pct_v3
+#### production_internal_segments_10pct_v3
 
 All segments (legs) within each trip of a shop, for a matched 1% sample of `event.id`s
 
@@ -326,11 +326,3 @@ Hotels mapping to market
 * [GCP - Getting Started](https://cloud.google.com/gcp/getting-started/)
 * [GCP - API Documentation](https://cloud.google.com/apis/docs/overview)
 
-<style>
-a:hover {
-    cursor: pointer;
-}
-table + h2, table + h4 {
-    padding-top: 20px;
-}
-</style>
