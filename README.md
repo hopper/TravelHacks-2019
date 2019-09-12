@@ -5,14 +5,6 @@ Hopper travel hackathon (2019)
 
 # List of schemas
 
----
-layout: page
-title: Data Dictionary
-permalink: /specs/data-dictionary/index.html
-description: Data Warehouse - Data Dictionary
----
-# Data Dictionary
-
 * [Pricing](#pricing)
     * [production_internal_trips_1pct_v3, production_kiwi_trips_1pct_v3](#production-internal-trips-1pct-v3-production-kiwi-trips-1pct-v3)
     * [production_internal_segments_1pct_v3, production_kiwi_segments_1pct_v3](#production-internal-segments-1pct-v3-production-kiwi-segments-1pct-v3)
@@ -49,7 +41,7 @@ All trips (itineraries) from each shop, for a 1% sample of `event.id`s
 | `available_seats` | `integer` | How many seats are nominally available for sale in this fare class, typically 0-9, not directly related to number of physical seats left on the plane(s) |
 | `lowest_cabin_class` | `string` | Lowest class of service amongst the segments in this trip |
 | `highest_cabin_class` | `string` | Highest class of service amongst the segments in this trip |
-| <del>`received_odate` | `string` | The date this trip was received, base on origin timezone, i.e. the date the user at that origin would say it was |
+| `received_odate` | `string` | The date this trip was received, base on origin timezone, i.e. the date the user at that origin would say it was |
 | `timestamp_ms` | `long` | Timestamp the search occurred in epoch millis |
 | `received_date` | `date` | Date the trip was received in Hopper TZ (partition) |
 | `trip_type` | `string` | Type of trip, one of `one_way`, `round_trip`, `open_jaw` |
@@ -76,7 +68,7 @@ All trips (itineraries) from each shop, for a 1% sample of `event.id`s
 | `outgoing.departure_day_of_week_mon1` | `integer` | Departing day of week in origin timezone, within Monday=1, Sunday=7 |
 | `outgoing.departure_tz_offset_ms` | `long` | Timezone offset in millis for origin |
 | `outgoing.departure_country_code` | `string` | Two letter ISO country code for origin |
-| `outgoing.departure_subdivision_code` | `string` |  |
+| `outgoing.departure_subdivision_code` | `string` | Three letter ISO 3166-2 code for subdivision (e.g. province or state) |
 | `outgoing.departure_currency_code` | `string` | Three letter ISO currency code for origin |
 | `outgoing.arrival_ddate` | `string` | Arrival date in destination timezone in yyyy-mm-dd format |
 | `outgoing.arrival_ms` | `long` | Arrival time in epoch millis |
@@ -109,20 +101,14 @@ All trips (itineraries) from each shop, for a 1% sample of `event.id`s
 | `returning.layovers` | `array` | List of layover airport codes |
 | `returning.marketing_carriers` | `array` | List of marketing carriers, the airlines advertised to the customer, e.g. via codeshare |
 | `returning.operating_carriers` | `array` | List of operating carriers, the airlines that actually fly the plane |
-| `returning.duration_minutes` | `integer` | Total length of travel (including layovers?) in minutes |
+| `returning.duration_minutes` | `integer` | Total length of travel (including layovers) in minutes |
 | `returning.stops` | `integer` | Number of stops for the slice |
 | `query.origin_type` | `string` | Type for origin, either `airport` or `city` |
 | `query.origin` | `string` | Origin code, e.g. BOS or YMQ |
 | `query.destination_type` | `string` |  |
 | `query.destination` | `string` |  |
 | `query.departure_date` | `string` | Departure date |
-| `query.departure_time_span` | `string` | Time interval for flex departure search |
 | `query.return_date` | `string` |  |
-| `query.return_time_span` | `string` |  |
-| `query.max_stops` | `integer` | Maximum allowable stops for search |
-| `query.plus_min_days` | `integer` | Plus/minus days for travel dates |
-| `query.alternate_origins` | `array` | List of allowable alternate origins |
-| `query.alternate_destinations` | `array` |  |
 | `cities.origin` | `string` | Origin for outbound |
 | `cities.destination` | `string` | Destination for outbound |
 | `cities.return_origin` | `string` | Origin for returning (typically same as `destination`) |
@@ -182,19 +168,14 @@ Metadata for airports keyed on IATA code
 | `iata_code` | `string` | Three letter iata code for the airport, like BOS |
 | `aka` | `array` | List of alternate names for the airport |
 | `boring` | `boolean` | Ad hoc hand-curated flag from the growth team for airports you wouldn't want to visit... |
-| `containers` | `array` | List of Hopper entities that contain this airport |
 | `continent_code` | `string` | Two letter ISO continent code for this airport, like NA |
 | `country_code` | `string` | Two letter ISO country code for this airport, like US |
 | `currency_code` | `string` | Three letter ISO currency code, like USD |
-| `home_url` | `string` | Homepage for this airport, sparsely populated, not maintained/unused? |
-| `icao_code` | `string` | ICAO airport code.  Rarely used.  Like KBOS |
-| `images` | `array` | List of entity images associated with this airport (not our flex illos) |
-| `images_iconic` | `array` | List of best (iconic) images for entity associated with this airport |
+| `icao_code` | `string` | ICAO airport code.  Rarely used.  Like KBOS |                                                                                                                    
 | `latitude` | `double` | Latitude of the airport |
 | `longitude` | `double` | Longitude of the airport |
 | `mac_iata_code` | `string` | IATA multi-city code for the airport, e.g. JFK is part of NYC |
 | `name` | `string` | Name of the airport |
-| `nearby` | `array` | List of nearby airports. Not maintained |
 | `promoted` | `string` | The promoted city or airport for this airport, e.g. BOS => BOS, JFK => NYC |
 | `region` | `string` | The name of the Hopper region containing this airport, like 'Europe'. |
 | `score` | `double` | An ad hoc measure of airport volume or importance, from 0-1.  Curated in Jacksonville.  Scores of 0 are filtered out of the app origin/destination search. |
@@ -206,11 +187,7 @@ Metadata for airports keyed on IATA code
 | `served_entity_name` | `string` | Name of the served entity |
 | `served_state_id` | `string` | Hopper id for the state containing the served entity |
 | `served_state_name` | `string` | Name of the state containing the served entity |
-| `subdivision_code` | `string` | Unknown |
 | `timezone` | `string` | The timezone prevailing at the airport, e.g. America/New_York |
-| `updated_at` | `string` | Not used |
-| `visible` | `boolean` | Whether this airport appears in the app |
-| `wikipedia_url` | `string` | Wikipedia link for this airport, not maintained |
 
 #### innovata_long
 
@@ -268,7 +245,6 @@ Flight schedules are subject to change. Innovata sends schedules on an approxima
 | `flightArrivalDayIndicator` | `string` | The arrival day indicator signifies which day the flight will arrive with respect to the origin depart day. <br>`blank` = arrives same day<br> -1 = Arrives the day before<br> +1 = Arrives the one day after<br> +2 = Arrives two days after |
 | `stops` | `string` | The number of stops will be set to zero (i.e. nonstop) if the flight does not land between the point of origin and final destination |
 | `stopCodes` | `string` | IATA airport codes where stops occur, separated by `!` (i.e. 2 stops = CDG!FRA) |
-| `stopRestrictions` | `string` | Traffic restrictions per stop (NOT USED) |
 | `stopsubAircraftCodes` | `string` | Shows the sub-aircraft type on each leg of the flight. |
 | `aircraftChangeIndicator` | `string` | The Aircraft change indicator signifies whether there has been an aircraft change at a stopover point for the flight leg.  (True / False) |
 | `meals` | `string` | The meal codes field contains up to two meal codes per class of service. The meal codes are used by the airline industry to differentiate between the various food service types.  |
