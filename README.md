@@ -295,30 +295,6 @@ Basic metadata for hotels
 | `geo_hotel_metadata_GiataAddress` | `string` |  |
 | `geo_hotel_metadata_GiataAccuracy` | `string` |  |
 
-#### geotables_hotel_market_xref
-
-Hotels mapping to market
-
-**Partitioned By** : ``
-
-| Columns | Data Type | Description |
-|-|-|-|
-| `geo_hotel_market_xref_im_lodging_id` | `string` |  |
-| `geo_hotel_market_xref_im_name` | `string` |  |
-| `geo_hotel_market_xref_market` | `string` |  |
-| `geo_hotel_market_xref_market_name` | `string` |  |
-| `geo_hotel_market_xref_market_name_full` | `string` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_im_lodging_id` | `string` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_im_name` | `string` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_im_lat` | `double` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_im_lon` | `double` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_GiataID` | `long` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_GiataName` | `string` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_category_name` | `string` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_GiataAddress` | `string` |  |
-| `geo_hotel_market_xref_geo_hotel_metadata_GiataAccuracy` | `string` |  |
-
-
 # Resources
 
 ## Google Cloud tutorials and documentation
