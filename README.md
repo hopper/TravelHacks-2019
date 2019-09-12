@@ -3,18 +3,20 @@ Hopper travel hackathon (2019)
 
 # Hackathon Guide
 
+* [List of schemas](#schemas)
+    * [Pricing](#pricing)
+        * [production_internal_trips_1pct_v3, production_kiwi_trips_1pct_v3](#production-internal-trips-1pct-v3-production-kiwi-trips-1pct-v3)
+        * [production_internal_segments_1pct_v3, production_kiwi_segments_1pct_v3](#production-internal-segments-1pct-v3-production-kiwi-segments-1pct-v3)
+    * [Metadata](#metadata)
+        * [airports_v9](#airports-v9)
+        * [innovata_long](#innovata-long)
+    * [Geotables](#geotables)
+        * [geotables_hotel_metadata](#geotables-hotel-metadata)
+        * [geotables_hotel_market_xref](#geotables-hotel-market-xref)
+* [Resources](#resources)
+    * [Google Cloud tutorials and documentation](#gcp)
+
 # List of schemas
-
-* [Pricing](#pricing)
-    * [production_internal_trips_1pct_v3, production_kiwi_trips_1pct_v3](#production-internal-trips-1pct-v3-production-kiwi-trips-1pct-v3)
-    * [production_internal_segments_1pct_v3, production_kiwi_segments_1pct_v3](#production-internal-segments-1pct-v3-production-kiwi-segments-1pct-v3)
-* [Metadata](#metadata)
-    * [airports_v9](#airports-v9)
-    * [innovata_long](#innovata-long)
-* [Geotables](#geotables)
-    * [geotables_hotel_metadata](#geotables-hotel-metadata)
-    * [geotables_hotel_market_xref](#geotables-hotel-market-xref)
-
 
 ## Pricing
 
@@ -315,6 +317,14 @@ Hotels mapping to market
 | `geo_hotel_market_xref_geo_hotel_metadata_category_name` | `string` |  |
 | `geo_hotel_market_xref_geo_hotel_metadata_GiataAddress` | `string` |  |
 | `geo_hotel_market_xref_geo_hotel_metadata_GiataAccuracy` | `string` |  |
+
+
+# Resources
+
+## Google Cloud tutorials and documentation
+
+* [GCP - Getting Started](https://cloud.google.com/gcp/getting-started/)
+* [GCP - API Documentation](https://cloud.google.com/apis/docs/overview)
 
 <style>
 a:hover {
