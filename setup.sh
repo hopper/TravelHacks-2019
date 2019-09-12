@@ -1,0 +1,1 @@
+export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/svc_account.json"
