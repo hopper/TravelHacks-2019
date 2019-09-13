@@ -1,12 +1,11 @@
 # TravelHacks 2019
 
 * [List of schemas](#List-of-schemas)
-     * [production_internal_trips_10pct_v3](#production_internal_trips_10pct_v3)
-     * [production_internal_segments_10pct_v3](#production_internal_segments_10pct_v3)
-     * [airports_v9](#airports-v9)
-     * [innovata_long](#innovata_long)
-     * [geotables_hotel_metadata](#geotables_hotel_metadata)
-     * [geotables_hotel_market_xref](#geotables_hotel_market_xref)
+     * [flight_airports](#flight_airports)
+     * [flight_schedules](#flight_schedules)
+     * [hotel_geo_metadata](#hotel_geo_metadata)
+     * [internal_flight_trips](#internal_flight_trips)
+     * [internal_flight_segments](#internal_flight_segments)
 * [Resources](#resources)
     * [Google Cloud tutorials and documentation](#Google-Cloud-tutorials-and-documentation)
 
@@ -113,7 +112,6 @@ Basic metadata for hotels
 
 | Columns | Data Type | Description |
 |-|-|-|
-| `geo_hotel_metadata_im_lodging_id` | `string` |  |
 | `geo_hotel_metadata_im_name` | `string` |  |
 | `geo_hotel_metadata_im_lat` | `double` |  |
 | `geo_hotel_metadata_im_lon` | `double` |  |
@@ -122,7 +120,6 @@ Basic metadata for hotels
 | `geo_hotel_metadata_category_name` | `string` |  |
 | `geo_hotel_metadata_GiataAddress` | `string` |  |
 | `geo_hotel_metadata_GiataAccuracy` | `string` |  |
-
 
 ### internal_flight_trips
 
@@ -151,7 +148,6 @@ Itineraries received in response to requests by Hopper on the behalf of our user
 | `received_date` | `date` | Date the trip was received, in the ET time zone |
 | `trip_type` | `string` | Type of trip; one of `one_way`, `round_trip`, `open_jaw` |
 | `event.source` | `string` | The shopping provider system that generated these search results |
-| `event.received_ms` | `long` | The timestamp we received these search results, in epoch millis |
 | `fare.total_usd` | `double` | Total ticket price in USD, including all taxes and fees |
 | `fare.tax_usd` | `double` | Tax component of the ticket price |
 | `fare.surcharge_usd` | `double` | Surcharge component (identically zero?) |
