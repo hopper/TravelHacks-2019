@@ -112,14 +112,13 @@ Basic metadata for hotels
 
 | Columns | Data Type | Description |
 |-|-|-|
-| `geo_hotel_metadata_im_name` | `string` |  |
-| `geo_hotel_metadata_im_lat` | `double` |  |
-| `geo_hotel_metadata_im_lon` | `double` |  |
-| `geo_hotel_metadata_GiataID` | `long` |  |
-| `geo_hotel_metadata_GiataName` | `string` |  |
-| `geo_hotel_metadata_category_name` | `string` |  |
-| `geo_hotel_metadata_GiataAddress` | `string` |  |
-| `geo_hotel_metadata_GiataAccuracy` | `string` |  |
+| `ID` | `long` | unique ID of the hotel in Giata database |
+| `name` | `string` | Name of the hotel |
+| `category_name` | `string` | Category of the lodging (e.g. 'resort', 'aparthotel') |
+| `Address` | `string` | Address of the hotel |
+| `latitude` | `double` | latitude of the lodging|
+| `longitude` | `double` | longitude of the lodging |
+| `Accuracy` | `string` | Accuracy of the coordinates (usually 'address', 'street', 'city') |
 
 ### internal_flight_trips
 
@@ -254,4 +253,4 @@ All segments (legs) within each trip of a shop, joinable with `internal_flight_t
 
 ## Google Cloud tutorials and documentation
 
-* [Qwiklabs](TODO)
+* [Qwiklabs](https://google.qwiklabs.com/quests/86?qlcampaign=5l-hack-23)
