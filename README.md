@@ -253,4 +253,4 @@ All segments (legs) within each trip of a shop, joinable with `internal_flight_t
 
 ## Google Cloud tutorials and documentation
 
-* [Qwiklabs](https://google.qwiklabs.com/quests/86?qlcampaign=5l-hack-23)
+* [Qwiklabs: Google Developer Essentials](https://google.qwiklabs.com/quests/86?qlcampaign=5l-hack-23)
