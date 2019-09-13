@@ -42,7 +42,7 @@ If a flight has a hidden stop, it will have a row for all consecutive combinatio
 
 Flight schedules are subject to change. Innovata sends schedules on an approximately 4 week basis. Each schedule only contains flights for the future, so there may be schedule changes that happened in the previous 4 weeks that are unaccounted for. Moreover, flights scheduled for the future may change in future schedules. received_date is the date that we received the final innovata schedule for the flight; if received_date is in the future, it means that future innovata schedules may change the current information. 
 
-**Partitioned By** : `received_date`
+**Partitioned By** : `date`
 
 | Columns | Data Type | Description |
 |-|-|-|
@@ -231,7 +231,7 @@ All segments (legs) within each trip of a shop, joinable with `internal_flight_t
 | `destination` | `string` | Destination airport for this slice |
 | `departure_ms` | `long` | Departure time in epoch millis |
 | `arrival_ms` | `long` | Arrival time in epoch millis |
-| `duration` | `integer` | Flight duration in minutes(?) |
+| `duration` | `integer` | Flight duration in minutes |
 | `flight_number` | `string` | Flight number |
 | `equipment_code` | `string` | Aircraft type |
 | `marketing_carrier` | `string` | Carrier marketing this flight, e.g. via a codeshare |
