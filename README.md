@@ -4,8 +4,8 @@
      * [flight_airports](#flight_airports)
      * [flight_schedules](#flight_schedules)
      * [hotel_geo_metadata](#hotel_geo_metadata)
-     * [internal_flight_trips](#internal_flight_trips)
-     * [internal_flight_segments](#internal_flight_segments)
+     * [flight_trips](#flight_trips)
+     * [flight_segments](#flight_segments)
 * [Resources](#resources)
     * [Google Cloud tutorials and documentation](#Google-Cloud-tutorials-and-documentation)
 
@@ -46,65 +46,21 @@ Flight schedules are subject to change. Innovata sends schedules on an approxima
 
 | Columns | Data Type | Description |
 |-|-|-|
-| `date` | `date` | The date a flight is/was scheduled to fly. |
-| `carrier` | `string` | The two or three letter code assigned by IATA or ICAO for the Carrier. |
-| `flightnumber` | `string` | The flight number. |
-| `serviceType` | `string` | The service type indicator is used to classify carriers according to the type of air service they provide. As specified in Appendix C of the IATA SSIM manual |
-| `effectiveDate` | `string` | The effective date represents the date that the carrier has scheduled this flight service to begin. DD/MM/YYYY |
-| `discontinuedDate` | `string` | The discontinued date represents the last date that the carrier has scheduled this flight service to operate. DD/MM/YYYY |
-| `day1` | `string` | Indicates whether the flight has service on Monday. 0 = no  1 = yes |
-| `day2` | `string` | Indicates whether the flight has service on Tuesday. 0 = no  1 = yes |
-| `day3` | `string` | Indicates whether the flight has service on Wednesday. 0 = no  1 = yes |
-| `day4` | `string` | Indicates whether the flight has service on Thursday. 0 = no  1 = yes |
-| `day5` | `string` | Indicates whether the flight has service on Friday. 0 = no  1 = yes |
-| `day6` | `string` | Indicates whether the flight has service on Saturday. 0 = no  1 = yes |
-| `day7` | `string` | Indicates whether the flight has service on Sunday. 0 = no  1 = yes |
-| `departureAirport` | `string` | The IATA airport code for the origin airport. |
-| `departureCity` | `string` | The IATA metropolitan area code contains the city code for the point of trip origin. |
-| `departureState` | `string` | Innovata State Code |
-| `departureCountry` | `string` | The standard IATA Country code for the point of trip origin. |
-| `departureTimePub` | `string` | The Published flight departure time. HH:MM:SS |
-| `departureTimeActual` | `string` | The agreed SLOT departure time.  HH:MM:SS |
-| `departureUTCVariance` | `string` | UTC Variant for the departure airport. +/- HHMM |
-| `departureTerminal` | `string` | Departure terminal. |
-| `arrivalAirport` | `string` | The standard IATA Airport code for the point of arrival. |
-| `arrivalCity` | `string` | The arrival city code contains the city code for the point of trip origin. The city code could be used to display flight information for multiple airports/stations affiliated with the same city code. |
-| `arrivalState` | `string` | Innovata State Code |
-| `arrivalCountry` | `string` | The standard IATA Country code for the point of arrival. |
-| `arrivalTimePub` | `string` | The Published flight arrival time.  HH:MM:SS |
-| `arrivalTimeActual` | `string` | The agreed SLOT arrival time.  HH:MM:SS |
-| `arrivalUTCVariance` | `string` | UTC Variant for the arrival airport.  + / - HHMM |
-| `arrivalTerminal` | `string` | Departure terminal. |
-| `subAircraftCode` | `string` | The sub aircraft type on the first leg of the flight.  (i.e. 763 = Boeing 767 300 series). |
-| `groupAircraftCode` | `string` | The group aircraft type on the first leg of the flight.  (i.e. 767 = Boeing 767 series). |
-| `classes` | `string` | Contains the most commonly used service classes (i.e. RFYC). |
-| `classesFull` | `string` | Full list of Service Class descriptions. |
-| `trafficRestriction` | `string` | As specified in Appendix G of the IATA SSIM manual. It may be found online. |
-| `flightArrivalDayIndicator` | `string` | The arrival day indicator signifies which day the flight will arrive with respect to the origin depart day. <br>`blank` = arrives same day<br> -1 = Arrives the day before<br> +1 = Arrives the one day after<br> +2 = Arrives two days after |
-| `stops` | `string` | The number of stops will be set to zero (i.e. nonstop) if the flight does not land between the point of origin and final destination |
-| `stopCodes` | `string` | IATA airport codes where stops occur, separated by `!` (i.e. 2 stops = CDG!FRA) |
-| `stopsubAircraftCodes` | `string` | Shows the sub-aircraft type on each leg of the flight. |
-| `aircraftChangeIndicator` | `string` | The Aircraft change indicator signifies whether there has been an aircraft change at a stopover point for the flight leg.  (True / False) |
-| `meals` | `string` | The meal codes field contains up to two meal codes per class of service. The meal codes are used by the airline industry to differentiate between the various food service types.  |
-| `flightDistance` | `string` | The shortest distance (in miles) between the origin and destination points. |
-| `elapsedTime` | `string` | The elapsed flight time is a calculation (in minutes) of the flight duration from the point of origin to the point of final destination (does not include layover times). |
-| `layoverTime` | `string` | The layover time that indicates (in minutes) how much time will be spent on the ground during a flight stopover. |
-| `inFlightService` | `string` | Standard IATA In-Flight Service codes. |
-| `SSIMcodeShareCarrier` | `string` |  Alternate flight designator or ticket selling airline. Submitted by carriers on the SSIM Chapter 7 file record and linked to the Code Share Status data field. Note: The Codeshare Info flags (below) should be used whenever possible as this is populated with information submitted in the DEI10, DEI50 and DEI127 fields.  |
-| `codeshareIndicator` | `string` | Flag that is set to true if the flight is operated by another carrier.  0 = no   1 = yes |
-| `wetleaseIndicator` | `string` | Flag that is set to true if the flight is a wet lease.  A Wet Lease occurs when an aircraft is owned by one carrier and operated by another.  0 = no   1 = yes |
-| `codeshareInfo` | `string` | Contains information regarding operating and marketing carriers.<br> e.g. AA1001 and QF1001 are marketed flights with the BA0001 operated flight.<br> For the AA1001 record, the Codeshare data field will be set to `Y` and the operating flight BA0001 will appear in this data field.<br> For the BA0001 entry, Codeshare will be set to `false`, and all the flights marketing BA001 will appear.  i.e. AA1001 /QF1001.<br> Multiple legs are separated by the `!` character. When number of stops is greater than 2, multiple logical legs are then separated by the `#` character.  |
-| `wetleaseInfo` | `string` | Shows the actual owner of the aircraft |
-| `operationalSuffix` | `string` | Flight number suffix as provided by carrier. |
-| `ivi` | `string` | Itinerary Variation Identifier.  Used when linking back to a SSIM file for DEI information. |
-| `leg` | `string` | Leg number.  Used when linking back to a SSIM file for DEI information. |
-| `recordId` | `string` | Unique record indicator |
-| `totalSeats` | `string` | The sum of all first class, business class, and economy class seats in the aircraft. Note: premium economy is treated as a subset of economy. |
-| `firstClassSeats` | `string` | The number of first class seats in the aircraft. |
-| `businessClassSeats` | `string` | The number of business class seats in the aircraft. |
-| `premiumEconomyClassSeats` | `string` | The number of premium economy class seats in the aircraft. Note:  this is a subset of economy class and not used in the Total Seats calculation |
-| `economyClassSeats` | `string` | The number of economy class seats in the aircraft (includes the number of premium economy class seats) |
-| `received_date` | `date` | The date we received the final schedule for this flight. Rows with `received_dates` in the future may be subject to change. |
+| `origin` | `string` | Origin airport code. |
+| `destination` | `string` | Destination airport code. |
+| `carrier` | `string` | Carrier code. |
+| `flightnumber` | `string` | Flight number of flight. |
+| `departure_time` | `string` | Departure Time Local |
+| `arrival_time` | `string` | Arrival Time Local |
+| `equipment_subtype` | `string` | Type of plane used, subtype |
+| `equipment_group` | `string` | Type of plane used, equipment group |
+| `date` | `date` | Date of flight |
+| `date_weekday` | `integer` | Day of week, Monday = 1, ... Sunday = 7 |
+| `seats_total` | `double` | Total number of seats |
+| `seats_economy` | `double` | Economy seats |
+| `seats_premium_economy` | `double` | Premium economy seats |
+| `seats_business` | `double` | Business seats |
+| `seats_first` | `double` | First class seats |
 
 ### hotel_geo_metadata
 
@@ -130,7 +86,7 @@ Itineraries received in response to requests by Hopper on the behalf of our user
 
 | Columns | Data Type | Description |
 |-|-|-|
-| `event.id` | `string` | A source-specific unique ID for this shop (list of trips). |
+| `event_id` | `string` | A source-specific unique ID for this shop (list of trips). |
 | `trip_index` | `integer` | Trip index (row number) within the original shop (list of trips) |
 | `origin` | `string` |  |
 | `destination` | `string` |  |
@@ -146,7 +102,7 @@ Itineraries received in response to requests by Hopper on the behalf of our user
 | `timestamp_ms` | `long` | Timestamp the search occurred in epoch millis |
 | `received_date` | `date` | Date the trip was received, in the ET time zone |
 | `trip_type` | `string` | Type of trip; one of `one_way`, `round_trip`, `open_jaw` |
-| `event.source` | `string` | The shopping provider system that generated these search results |
+| `event_source` | `string` | The shopping provider system that generated these search results |
 | `fare.total_usd` | `double` | Total ticket price in USD, including all taxes and fees |
 | `fare.tax_usd` | `double` | Tax component of the ticket price |
 | `fare.surcharge_usd` | `double` | Surcharge component (identically zero?) |
