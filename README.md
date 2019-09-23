@@ -76,7 +76,7 @@ Basic metadata for hotels
 | `longitude` | `double` | longitude of the lodging |
 | `Accuracy` | `string` | Accuracy of the coordinates (usually 'address', 'street', 'city') |
 
-### internal_flight_trips
+### flight_trips
 
 Itineraries received in response to requests by Hopper on the behalf of our users.
 
@@ -172,7 +172,7 @@ Itineraries received in response to requests by Hopper on the behalf of our user
 | `cities.same_destination` | `boolean` | Whether slices coincide at destination |
 | `cities.is_roundtrip` | `boolean` |  |
 
-### internal_flight_segments
+### flight_segments
 
 All segments (legs) within each trip of a shop, joinable with `internal_flight_trips` using the combination of `trip_index` and `event.id` as a foreign key.
 
