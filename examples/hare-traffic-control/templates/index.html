@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/static/odometer-theme-default.css" />
+<link rel="stylesheet" href="/static/style.css" />
+<style>
+</style>
+</head>
+<body id='body'>
+<div class="container">
+  <div id="tooltip"></div>
+  <svg></svg>
+  <div class="counters">
+    <span><span class="counter-section">✈️</span><label>Flying</label><span id='flying-counter' class="odometer">0</span></span>
+    <span><label>Tickets today</label><span id='airtix-counter' class="odometer">0</span></span>
+    <span><label>GBV</label><span id='airgbv-counter' class="odometer ">0</span></span>
+    <span><span class="counter-section">🏨</span><label>Staying</label><span id="stays-counter" class="odometer">0</span></span>
+    <span><label>Bookings today</label><span id='bookings-counter' class="odometer">0</span></span>
+    <span><label>GBV</label><span id='hotelgbv-counter' class="odometer">0</span></span>
+  </div>
+</div>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3-array.v2.min.js"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script src="/static/odometer.min.js"></script>
+<script>
+window.odometerOptions = {format: '(,ddd)'};
+
+var width = document.getElementById('body').clientWidth,
+    height = width/2,
+    jetSize = width/192,
+    fadeDuration = 250,
+    intFmt = d3.format(',.0f'),
+    usdFmt = d3.format('$,.0f');
+
+var π = Math.PI,
+    radians = π / 180,
+    degrees = 180 / π;
+
+var projection = d3.geoEquirectangular()
+    .translate([width / 2, height / 2])
+    .scale(height/π)
+    .precision(.1);
+
+var illuminated = d3.geoCircle()
+    .radius(90);
+
+var path = d3.geoPath()
+    .projection(projection);
+
+var svg = d3.select("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+var defs = svg.append('svg:defs');
+defs
+  .append('filter')
+  .attr('id', 'blur')
+  .append('feGaussianBlur')
+  .attr('stdDeviation', 2);
+defs
+  .append('pattern')
+  .attr('id', 'earth-night')
+  .attr('patternUnits', 'userSpaceOnUse')
+  .attr('width', width)
+  .attr('height', height)
+  .append('svg:image')
+  .attr('xlink:href', '/static/earth_lights_lrg.jpg')
+  .attr('width', width)
+  .attr('height', height);
+defs
+  .append('pattern')
+  .attr('id', 'earth-day')
+  .attr('patternUnits', 'userSpaceOnUse')
+  .attr('width', width)
+  .attr('height', height)
+  .append('svg:image')
+  .attr('xlink:href', '/static/land_shallow_topo_2048.jpg')
+  .attr('width', width)
+  .attr('height', height);
+defs.append('symbol')
+  .attr('id', "jet")
+  .attr('viewBox', "0 0 455 455")  
+  .append('path')
+  .attr('transform', "translate(0, 35)")
+  .attr('d',
+      "m 169.62867,381.75 c 12.84407,-14.37271 24.5738,-29.69437 37.04068,-44.38935 9.15409,-3.88201 28.90256,9.43092 32.1023,-1.42562 2.23506,-10.51294 -1.77641,-15.68814 -13.10182,-12.57772 -17.28579,5.26023 12.06854,-17.21794 15.07011,-23.34015 8.61953,-6.53785 13.80218,-23.06349 26.84593,-17.46775 9.08931,2.60209 26.26886,7.38627 22.01205,-7.8534 1.38769,-16.47051 -33.17897,4.69523 -13.62454,-12.78616 C 290.6671,245.40287 305.78797,229.2838 320.72702,213 c 40.8185,-0.36333 82.93799,1.3254 121.96828,-12.31313 28.46875,-12.3962 -16.34194,-23.5395 -28.24721,-24.31036 -31.15805,-5.85485 -62.92754,-3.52788 -94.38495,-5.69507 -16.73151,-18.82091 -35.04722,-36.43415 -50.19592,-56.51402 13.82705,10.24458 26.50604,-6.59893 16.53047,-14.780516 -10.21821,-3.251671 -22.94968,8.441786 -31.10345,1.116286 -12.00563,-13.822788 -25.34631,-26.554725 -36.63461,-40.925464 11.29979,5.12049 27.98684,1.784012 19.08803,-14.597645 -10.64855,-5.210497 -25.29819,9.339021 -33.20774,-0.524024 -12.22657,-14.306117 -23.19302,-29.84104 -36.8038,-42.8432343 -5.24804,-0.3446901 -30.69181,-4.9898848 -22.4868,5.0357179 11.06653,19.8858944 23.51365,39.0760954 33.39108,59.5638324 -9.75434,1.795872 14.24766,9.660974 12.09669,19.523876 0.85035,6.706268 -5.37431,5.557253 4.66199,8.435308 2.00832,8.706673 18.91482,28.427583 7.95547,32.803203 -3.15372,-1.0366 23.1044,20.42672 4.4171,22.30942 10.81227,-0.57023 11.32248,10.07335 13.85957,18.11024 -15.31041,8.16207 -46.40962,1.94207 -67.80312,4.5115 -27.01077,0.52976 -54.14127,2.0444 -80.634642,7.66103 C 56.778053,168.75397 45.062543,151.14298 30.696635,137.44099 23.319846,132.05949 19.085336,119.08286 8.1195383,122 c -16.5028758,0.95182 3.8009767,27.86462 3.0150297,40 2.380837,11.04038 11.149143,26.0119 1.165205,31.24191 11.960572,10.63796 -6.0196737,33.41516 -6.6217997,49.25047 C -1.5326616,256.36549 0.09356489,265.82903 16.727638,262 c 18.587598,-18.79615 35.020229,-40.05509 55.26132,-56.98835 34.606842,6.103 69.675362,8.22872 104.797312,7.73988 13.69213,2.36891 38.49935,-4.42497 44.66078,5.05251 0.68582,9.25494 -11.49328,19.03388 -10.98442,18.21127 7.07273,1.9957 1.65631,21.29031 -7.57431,20.15636 8.8179,2.14805 -5.19094,36.06315 -13.36667,37.64619 9.31848,8.62125 -17.79718,23.23322 -13.75,23.45555 1.79894,14.15304 -19.144,35.65487 -25.94288,52.49016 -8.78701,10.07257 -8.93361,16.61565 6.12884,14.18607 4.44021,-0.28881 10.05563,1.17174 13.67106,-2.19964 z"
+      );
+svg.append('rect')
+  .attr('class', 'background')
+  .attr('width', width)
+  .attr('height', height);
+
+var time_delta = {{ data.replay_timestamp }} - {{ data.start_timestamp }};
+
+console.log("replay_timestamp:"+ {{ data.replay_timestamp }})
+console.log("start_timestamp:"+ {{ data.start_timestamp }})
+console.log("time_delta: "+ time_delta)
+
+Promise.all(['/static/airports.json'].map(url => d3.json(url)))
+  .then(data => {
+    var [airportLookup] = data;
+
+  Object.values(airportLookup).forEach(d => {
+    d.lonlat = [d.longitude, d.latitude]
+    d.xy = projection(d.lonlat);
+  });
+
+  var segments = [],
+      stays = [],
+      color = null;
+
+  function updateSegments() {
+    Promise.all(['/api/v1/segments'].map(url => d3.json(url)))
+      .then(data => {
+        var [rawSegments] = data;
+        console.log(rawSegments)
+
+        rawSegments.forEach(function(s) {
+          var o = airportLookup[s.origin],
+              d = airportLookup[s.destination];
+          s.source = o.lonlat;
+          s.sourcexy = o.xy;
+          s.target = d.lonlat;
+          s.targetxy = d.xy;
+          s.geo = {type: "LineString", coordinates: [s.source, s.target]};
+          s.interpolator = d3.geoInterpolate(s.source, s.target);
+        });
+
+        if (!color) {
+          var carriers = Array.from(
+                d3.rollup(rawSegments, v => v.length, d => d.marketing_carrier).entries()
+              )
+              .sort((a, b) => d3.descending(a[1], b[1]))
+              .map(d => d[0]);
+
+              // Devon color scale from http://www.fabiocrameri.ch/colourmaps.php
+          color = d3.scaleOrdinal([
+              '#f3f2fd', '#e5e2fa', '#d7d3f8', '#cac5f5', '#bcb6f2', '#afa8ef',
+              '#999be8', '#798ddc', '#577ecf', '#3d70bc', '#3165a5', '#275a8f'
+           ]).domain(carriers);
+        }
+        segments = rawSegments;
+      })
+      .catch(err => {
+          console.log("Failed to fetch updated segments:", err)
+      });
+  }
+
+  updateSegments();
+  setInterval(updateSegments, 10*60*1000);
+
+  var night = svg.append('g')
+
+  night.append("path")
+      .attr("class", "terminator");
+  night.append("path")
+      .attr("class", "night");
+
+  svg.append('rect')
+    .attr('class', 'foreground')
+    .attr('width', width)
+    .attr('height', height);
+
+  var arcs = svg.append('g')
+      .attr('class', 'arcs');
+  var jets = svg.append('g')
+      .attr('class', 'jets');
+  var pings = svg.append('g')
+      .attr('class', 'pings');
+
+  var lastsale = 0,
+    ixform = 0;
+
+  redraw();
+  setInterval(redraw, 4000);
+
+  function redraw() {
+    var replay_time = Math.floor((+new Date() + time_delta*1000)/1000),
+      tipevent = null;
+
+    console.log(replay_time)
+
+    var activeSegments = segments
+        .filter(d => d.departure_timestamp <= replay_time && replay_time <= d.arrival_timestamp);
+
+    console.log("number of active segments" + activeSegments.length)
+
+    activeSegments.forEach(d => {
+      d.percent = (replay_time - d.departure_timestamp) / (d.arrival_timestamp - d.departure_timestamp);
+    })
+
+    night
+      .selectAll('path')
+      .datum(illuminated.center(antipode(solarPosition(replay_time))))
+      .attr("d", path);
+
+    var join;
+
+    join = arcs
+        .selectAll("path")
+        .data(activeSegments, d => d.segment_id);
+    join.enter()
+        .call(s => {
+          if (!tipevent && s.data().length) {
+            // console.log('takeoffs:', s.data().length);
+            var es = s.data().slice().sort((a, b) => b.departure_timestamp - a.departure_timestamp);
+            tipevent = es[0];
+            tipevent.message = 'Departed'
+          }
+        })
+        .append("path")
+        .attr("class", "arc")
+        .attr('stroke-width', width/1560)
+        .attr('d', d => path(d.geo));
+    join.exit()
+        .call(s => {
+          if (!tipevent && s.data().length) {
+            // console.log('landings:', s.data().length);
+            var es = s.data().slice().sort((a, b) => b.arrival_timestamp - a.arrival_timestamp);
+            tipevent = es[0];
+            tipevent.message = 'Landed'
+          }
+        })
+        .remove();
+
+    join = jets
+        .selectAll('use')
+        .data(activeSegments, d => d.segment_id);
+    join.enter().append('use')
+        .on('mouseover', showTooltip)
+        .on('mouseout', hideTooltip)
+        .attr('transform', jetTransform)
+        .attr('xlink:href', '#jet')
+        .attr('width', jetSize)
+        .attr('height', jetSize)
+        .style('fill', d => color(d.marketing_carrier))
+        .attr('opacity', 0)
+      .transition().duration(fadeDuration)
+        .attr('opacity', 1);
+    join.exit()
+      .transition().duration(fadeDuration)
+          .attr('opacity', 0)
+      .remove();
+
+    // recalculate the xform for existing jets once in a while
+    jets.selectAll('use')
+      .filter((d, i) => i%10 == ixform)
+      .attr('transform', jetTransform);
+    ixform = (ixform + 1) % 10;
+
+    if (tipevent) {
+      const xy = tipevent.message == 'Departed' ? tipevent.sourcexy : tipevent.targetxy;
+      pings
+        .append('circle')
+        .datum(tipevent)
+        .attr('class', 'airport')
+        .attr('cx',xy[0])
+        .attr('cy', xy[1])
+        .attr('r', 0)
+        .attr('stroke', "#FAD766")
+        .attr('stroke-width', jetSize/3)
+        .attr('stroke-opacity', 1)
+      .transition()
+        .duration(3000)
+        .attr('r', 3*jetSize)
+        .attr('stroke', 'red')
+        .attr('stroke-width', 0)
+        .attr('stroke-opacity', 0.2)
+      .remove();
+
+      showTooltip(tipevent, null, null, xy, 500, 2500);
+    }
+
+    d3.select("#flying-counter").text(d3.sum(activeSegments, d => d.pax));  
+    d3.select("#destinations-counter").text(Array.from(d3.group(activeSegments, d => d.destination).keys()).length);
+  }
+
+});
+
+
+function showTooltip(d, i, sel, xy, delayBefore, hideAfter) {
+  if (!xy) xy = d3.mouse(svg.node());
+  const x = xy[0] + 6, y = xy[1] + 6;
+
+  var tip = d3.select('#tooltip'),
+    s
+
+  if (d.lob) {
+    s = '<div><b>Booked</b></div>';
+    if (d.lob == 'hotel') {
+      // hotel sales event
+      s += '<div>' + intFmt(d.hotel_stay) + ' night stay in ' + d.market + ' for ' + usdFmt(d.grand_total) + '</div>'
+        + '<div>Staying ' + d.hotel_checkin + ' to ' + d.hotel_checkout + '</div>';
+    } else if (d.lob == 'air') {
+      // air sales event
+      s += '<div>' + d.origin + ' to ' + d.destination + '</div>'
+        + '<div>' + d.departure_date + (d.return_date ? (' to ' + d.return_date) : ' (one way)') + '</div>'
+        + '<div>' + (d.pax?(intFmt(d.pax) + ' pax on '):'Flying ')
+                + d.carrier + ' for ' + usdFmt(d.grand_total) + '</div>';
+    }
+  }
+
+  tip.interrupt();
+  tip.html(s)
+    .style("left", x + "px")
+    .style("top", y + "px");
+  tip.transition().delay(delayBefore || 0).duration(fadeDuration).style('opacity', 0.9);
+  if (hideAfter) {
+    tip.transition().delay(hideAfter).duration(fadeDuration).style('opacity', 0)
+  }
+}
+
+function hideTooltip() {
+  d3.select('#tooltip').transition().duration(fadeDuration).style('opacity', 0);
+}
+
+
+function jetTransform(segment) {
+  var
+    start = segment.source,
+    end = segment.target,
+    xypos = t => projection(segment.interpolator(t)),
+    t = Math.min(Math.max(segment.percent, 0), 1), // clamp jet to route
+    p = xypos(t),
+    p0 = xypos(t-0.01), p1 = xypos(t+0.01),
+    hx = p1[0] - p0[0],
+    hy = p1[1] - p0[1],
+    heading = Math.atan2(hy, hx);
+
+    return "translate(" + p[0] + ',' + p[1] + ")"
+    + " rotate(" + heading * degrees + ")"
+    + " scale(" + Math.pow(segment.pax, 1/3) + ")"
+    + " translate(" + -jetSize/2 + ',' + -jetSize/2 + ")";
+}
+
+function antipode(position) {
+  return [position[0] + 180, -position[1]];
+}
+
+function solarPosition(time) {
+  var centuries = (time - Date.UTC(2000, 0, 1, 12)) / 864e5 / 36525, // since J2000
+      longitude = (d3.utcDay.floor(time) - time) / 864e5 * 360 - 180;
+  return [
+    longitude - equationOfTime(centuries) * degrees,
+    solarDeclination(centuries) * degrees
+  ];
+}
+
+// Equations based on NOAA’s Solar Calculator; all angles in radians.
+// http://www.esrl.noaa.gov/gmd/grad/solcalc/
+
+function equationOfTime(centuries) {
+  var e = eccentricityEarthOrbit(centuries),
+      m = solarGeometricMeanAnomaly(centuries),
+      l = solarGeometricMeanLongitude(centuries),
+      y = Math.tan(obliquityCorrection(centuries) / 2);
+  y *= y;
+  return y * Math.sin(2 * l)
+      - 2 * e * Math.sin(m)
+      + 4 * e * y * Math.sin(m) * Math.cos(2 * l)
+      - 0.5 * y * y * Math.sin(4 * l)
+      - 1.25 * e * e * Math.sin(2 * m);
+}
+
+function solarDeclination(centuries) {
+  return Math.asin(Math.sin(obliquityCorrection(centuries)) * Math.sin(solarApparentLongitude(centuries)));
+}
+
+function solarApparentLongitude(centuries) {
+  return solarTrueLongitude(centuries) - (0.00569 + 0.00478 * Math.sin((125.04 - 1934.136 * centuries) * radians)) * radians;
+}
+
+function solarTrueLongitude(centuries) {
+  return solarGeometricMeanLongitude(centuries) + solarEquationOfCenter(centuries);
+}
+
+function solarGeometricMeanAnomaly(centuries) {
+  return (357.52911 + centuries * (35999.05029 - 0.0001537 * centuries)) * radians;
+}
+
+function solarGeometricMeanLongitude(centuries) {
+  var l = (280.46646 + centuries * (36000.76983 + centuries * 0.0003032)) % 360;
+  return (l < 0 ? l + 360 : l) / 180 * π;
+}
+
+function solarEquationOfCenter(centuries) {
+  var m = solarGeometricMeanAnomaly(centuries);
+  return (Math.sin(m) * (1.914602 - centuries * (0.004817 + 0.000014 * centuries))
+      + Math.sin(m + m) * (0.019993 - 0.000101 * centuries)
+      + Math.sin(m + m + m) * 0.000289) * radians;
+}
+
+function obliquityCorrection(centuries) {
+  return meanObliquityOfEcliptic(centuries) + 0.00256 * Math.cos((125.04 - 1934.136 * centuries) * radians) * radians;
+}
+
+function meanObliquityOfEcliptic(centuries) {
+  return (23 + (26 + (21.448 - centuries * (46.8150 + centuries * (0.00059 - centuries * 0.001813))) / 60) / 60) * radians;
+}
+
+function eccentricityEarthOrbit(centuries) {
+  return 0.016708634 - centuries * (0.000042037 + 0.0000001267 * centuries);
+}
+
+</script>
+</body>
+</html>

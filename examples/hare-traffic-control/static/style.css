@@ -1,0 +1,97 @@
+body {
+  background-color: black;
+  margin: 0;
+  color: #505050;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-size: 1vw;
+  position: fixed;
+  top: 0; bottom: 0; left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.terminator {
+  stroke: black;
+  stroke-opacity: 0.5;
+  stroke-width: 1px;
+  filter: url(#blur);
+}
+.night {
+  fill: url(#earth-night);
+}
+.land {
+  fill: none;
+  stroke: red;
+}
+.background {
+  fill: url(#earth-day);
+  stroke: none;
+}
+.foreground {
+  color: black;
+  opacity: 0.3;
+}
+.arcs {
+    fill: none;
+    opacity: 0.3;
+    stroke: #666;
+    stroke-linejoin: round;
+}
+.pings {
+  fill: none;
+}
+
+.jets {
+/*  fill: #B0C4DE; */
+  stroke: black;
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+#tooltip {
+    position: absolute;
+    /*text-align: center;*/
+    /*width: 120px; */
+    /*height: 28px; */
+    padding: 0.5em 1em;
+    font-size: 0.8em;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 0.5em;
+    pointer-events: none;
+    opacity: 0;
+}
+.container {
+  position: relative;
+}
+.counters {
+  position: absolute;
+  bottom: 0;
+  padding-bottom: 5px;
+  padding-top: 20px;
+  background: linear-gradient(to bottom, rgba(192, 192, 192,0) 0%,rgba(192, 192, 192,1) 50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 1.2em;
+  color: #333333;
+}
+.counters span {
+  display: inline-block;
+  vertical-align: middle;
+}
+.counters label, .counter-section {
+  padding-right: 15px;
+}
+.counter-section {
+  font-size: 1.5em;
+  padding-right: 30px;
+}
+.counters span.odometer {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+#hotelgbv-counter .odometer-inside:before, #airgbv-counter .odometer-inside:before, #gbv-counter .odometer-inside:before {
+    content: "$"
+}

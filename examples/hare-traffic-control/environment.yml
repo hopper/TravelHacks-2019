@@ -1,0 +1,9 @@
+name: hare-traffic-control
+channels:
+- defaults
+dependencies:
+- python=3.6.1
+- pip
+- requests
+- flask
+- pytz
