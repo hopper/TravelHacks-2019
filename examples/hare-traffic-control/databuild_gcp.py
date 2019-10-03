@@ -22,7 +22,7 @@ def query_gcp_flight_segments(start_time):
 
     dataset_id = initialize_dataset(client)
 
-    add_to_dataset(client, dataset_id, 'flight_segments', 'parquet')
+    add_to_dataset(client, dataset_id, 'flight_segments')
 
     # Configure the query job.
     job_config = bigquery.QueryJobConfig()
@@ -107,14 +107,13 @@ def table_exist(client, project_id, dataset_id, table_id):
        raise
     return False
 
-def add_to_dataset(client, dataset_id, table_name, format):
-    #table_uri = f'gs://hackathon-mtl-2019/tmp/{table_name}.{format}/part-*.{format}'
-    table_uri = f'gs://hackathon-mtl-2019/tmp/flight_segments_tmp.parquet/part-*.parquet'
+def add_to_dataset(client, dataset_id, table_name):
+    table_uri = 'gs://travelhacks-datasets/all/flight_segments/*.avro'
     table_id = table_name
 
     job_config = bigquery.LoadJobConfig()
     job_config.autodetect = True
-    job_config.source_format = source_format_dic[format]
+    job_config.source_format = bigquery.SourceFormat.AVRO
 
     dataset_ref = client.dataset(dataset_id)
 
