@@ -151,7 +151,7 @@ Itineraries received in response to requests by Hopper on the behalf of our user
 | `event_source` | `string` | The shopping provider system that generated these search results |
 | `fare.total_usd` | `double` | Total ticket price in USD, including all taxes and fees |
 | `fare.tax_usd` | `double` | Tax component of the ticket price |
-| `fare.surcharge_usd` | `double` | Surcharge component (identically zero?) |
+| `fare.surcharge_usd` | `double` | Surcharge component (identically zero) |
 | `fare.currency` | `string` | Currency the trip was originally priced in |
 | `fare.total` | `double` | Total ticket price in original `currency` units |
 | `fare.tax` | `double` | Tax amount in original currency |
@@ -181,7 +181,7 @@ Itineraries received in response to requests by Hopper on the behalf of our user
 | `outgoing.layovers` | `array` | List of layover airport codes |
 | `outgoing.marketing_carriers` | `array` | List of marketing carriers, the airlines advertised to the customer, e.g. via codeshare |
 | `outgoing.operating_carriers` | `array` | List of operating carriers, the airlines that actually fly the plane |
-| `outgoing.duration_minutes` | `integer` | Total length of travel (including layovers?) in minutes |
+| `outgoing.duration_minutes` | `integer` | Total length of travel (including layovers) in minutes |
 | `outgoing.stops` | `integer` | Number of stops for the slice |
 | `returning.origin` | `string` | Three letter airport code like BOS for slice origination |
 | `returning.destination` | `string` | Three letter code like YUL for slice destination |
@@ -242,7 +242,7 @@ All segments (legs) within each trip of a shop, joinable with `flight_trips` usi
 | `fare_code` | `string` | Fare basis code for this segment |
 | `carrier_cabin_class` | `string` | Cabin class according to the carrier |
 | `hopper_cabin_class` | `string` | Standardized cabin class according to Hopper, one of E - Economy, EP - Premium Economy, B - Business, F - First, U - Unknown |
-| `stops` | `integer` | Number of stops within this segment, sometimes not requiring deplaning(?) |
+| `stops` | `integer` | Number of stops within this segment, sometimes not requiring deplaning |
 | `available_seats` | `integer` | Nominally availability (0-9) for this segment in this fare class |
 | `booking_code` | `string` | Fare bucket (A-Z) typically the first letter of the fare basis code |
 | `received_date` | `date` | Received date in Hopper TZ (partition) |
