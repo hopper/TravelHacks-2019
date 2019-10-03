@@ -1,11 +1,13 @@
 # TravelHacks 2019
 
+* [Glossary](#Glossary)
 * [List of schemas](#List-of-schemas)
      * [flight_airports](#flight_airports)
      * [flight_schedules](#flight_schedules)
      * [hotel_geo_metadata](#hotel_geo_metadata)
      * [flight_trips](#flight_trips)
      * [flight_segments](#flight_segments)
+* [Getting Started](#Getting-Started)
 * [Resources](#resources)
     * [Google Cloud tutorials and documentation](#Google-Cloud-tutorials-and-documentation)
 
@@ -250,6 +252,20 @@ All segments (legs) within each trip of a shop, joinable with `flight_trips` usi
 | `event.source` | `string` | The shopping provider system that generated these search results |
 | `cities.origin` | `string` |  |
 | `cities.destination` | `string` |  |
+
+# Getting Started
+
+* The captain of the team should receive an invite e-mail, which will provide access to the TravelHacks GCP organization
+* The captain should then create a project for the team, following instructions [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
+* From that point there are several possible options to the team
+* It is likely that you will want to run code locally using the GCP API, which will require valid credentials. In that case, see next section
+
+## Using GCP Credentials locally
+
+* Create a service account for your project, and give it the correct permissions [give it the correct permissions](https://cloud.google.com/iam/docs/creating-managing-service-accounts)
+* Download the service account's credential json (this should be an available option when creating the service account)
+* Export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials/json
+* You should now be able to use the GCP API with any of their available clients
 
 # Resources
 
