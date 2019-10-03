@@ -284,7 +284,8 @@ A .1% sample of our data, from june 2017 to july 2019, with JFK airport as the o
 
 * The captain of the team should receive an invite e-mail, which will provide access to the TravelHacks GCP organization
 * The captain should then create a project for the team, following instructions [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
-* From that point there are several possible options to the team
+* From that point there are several possible options to the team. You should decide if you want to use BigQuery, use a Jupyter notebook, create a Dataproc cluster, etc.
+Don't hesitate to call for help in case of [overchoice paralysis](https://en.wikipedia.org/wiki/Overchoice) 
 * It is likely that you will want to run code locally using the GCP API, which will require valid credentials. In that case, see next section
 
 ## Using GCP Credentials locally
