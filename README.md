@@ -290,7 +290,7 @@ Don't hesitate to call for help in case of [overchoice paralysis](https://en.wik
 
 ## Using GCP Credentials locally
 
-* Create a service account for your project, and give it the correct permissions [give it the correct permissions](https://cloud.google.com/iam/docs/creating-managing-service-accounts)
+* Create a service account for your project, and [give it the correct permissions](https://cloud.google.com/iam/docs/creating-managing-service-accounts)
 * Download the service account's credential json (this should be an available option when creating the service account)
 * Export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials/json
 * You should now be able to use the GCP API with any of their available clients
