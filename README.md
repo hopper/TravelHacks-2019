@@ -1,5 +1,6 @@
 # TravelHacks 2019
 
+* [Getting Started](#Getting-Started)
 * [Glossary](#Glossary)
 * [List of schemas](#List-of-schemas)
      * [flight_airports](#flight_airports)
@@ -7,17 +8,33 @@
      * [hotel_geo_metadata](#hotel_geo_metadata)
      * [flight_trips](#flight_trips)
      * [flight_segments](#flight_segments)
+     * [flight_shops](#flight_shops)
 * [GCP bucket structure](#GCP_bucket_structure)
 * [List of data slices](#List-of-data-slices)
-* [Getting Started](#Getting-Started)
 * [Resources](#resources)
     * [Google Cloud tutorials and documentation](#Google-Cloud-tutorials-and-documentation)
 
+## Getting Started
+
+* The captain of the team should receive an invite e-mail, which will provide access to the TravelHacks GCP organization
+* The captain should then create a project for the team, following instructions [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
+* From that point there are several possible options to the team. You should decide if you want to use BigQuery, use a Jupyter notebook, create a Dataproc cluster, etc.
+Don't hesitate to call for help in case of [overchoice paralysis](https://en.wikipedia.org/wiki/Overchoice) 
+* It is likely that you will want to run code locally using the GCP API, which will require valid credentials. In that case, see next section
+
+### Using GCP Credentials locally
+
+* Create a service account for your project, and give it the correct permissions [give it the correct permissions](https://cloud.google.com/iam/docs/creating-managing-service-accounts)
+* Download the service account's credential json (this should be an available option when creating the service account)
+* Export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials/json
+* You should now be able to use the GCP API with any of their available clients
+
 ## Glossary
+
+Here are some terms and acronyms used in the air travel industry. This will help you get a better grasp of the terms used in the data schemas.
 
 See also [ATPCO's glossary](https://www.atpco.net/glossary).
 
- * ARC - The settlement plan for the United States.
  * Airline types
     * Disclosure - "For airline companies that have a code sharing agreement, the airline that operates the flight." (from Sabre)
     * Marketing - The carrier that sells a flight.
@@ -25,31 +42,13 @@ See also [ATPCO's glossary](https://www.atpco.net/glossary).
     * Plating - a synonym for validating, used by Travelport in particular.
     * Validating - The carrier that collects payment, issues tickets, and distributes payment to any other carriers in the reservation. A Hopper user doesn't know this carrier unless they are issued travel credit for a cancellation. If the carriers in a reservation don't have an interline agreement, there are multiple validating carriers.
     * Primary - defined and used only internally at Hopper. For a slice, a primary carrier is the marketing carrier of the longest segment. For a trip, a primary carrier is the primary carrier of the first slice. We have multiple primary carriers for a trip only if a booking is multi tickets (a.k.a. hacker fares).
- * Authorization - A hold of funds on a credit card account. The actual transfer of funds doesn't occur until the authorization is captured. If an authorization is not captured within some time (around 7 days), it is automatically voided.
- * Booking - The exact scope can vary by context but it generally refers to the process of pricing, checking availability, reserving seats, transmitting passenger information, and other actions required to complete a reservation.
- * BSP - Business Settlement Plan. The type of settlement used everywhere except the United States. Each BSP country has its own rules, but operates relatively similarly.
- * Capture - Initiates the transfer of funds set aside by the authorization.
  * Codeshare - An agreement between two airlines in which the marketing airline puts its own airline identification code on flights that the other participating airline actually operates.
     * Online - An itinerary with a single marketing carrier on all segments
     * Interline - An itinerary with more than one marketing carrier, but the marketing carriers have agreements to work together for things like baggage transfer.
- * Consolidator - An agency that has access to better fares for some airlines, routes, and travel dates. A consolidator might provide ticketing in a situation where Hopper cannot ticket, such as before Hopper is accredited in a point of sale or if an airline hasn't granted ticketing rights to Hopper yet.
- * Fares
-    * Account code - A short identifier that provides access to different fares when making a price quote in the GDS. For example, we use HOP to identify Hopper commissionable fares.
-    * Base - The fare in the currency of the origin.
-    * Booking class -
-    * [Channel-private](https://docs.google.com/document/d/1Rorz9gW8TsNgQfPjZ1cKoZ2O8BD4491ACQ15CEgD7pU/edit) - non-negotiated yet nominally private fares. They are typically intended for distribution by OTAs but not traditional travel agencies. An important assumption of channel-private fares is that they are fine to display alongside public fares in public flight lists.
-     (In technical terms, channel-private fares are [filed with Cat 15 but not Cat 25 or 35](http://archive.is/yENbx).)
-    * Commission - Typically refers to money paid to an agency by an airline out of the cost of the ticket.
-    * Equivalent - The fare in the currency of the point of sale when the base fare is in a different currency.
-    * Fare basis code - An identifier for a set of fare rules.
-    * Markup - An amount the agency adds to the price the airline charges, usually in the context of a net fare.
-    * Net - A negotiated fare whose price is below the published price. Travel agencies can sell it at or slightly below the published price, pocketing the difference.
-    * Private - A fare with restrictions on distribution or ticketing. Includes commissions and nets. Includes negotiated fares and channel-private fares. Airlines use these to reward or incentivize high-volume partners, and to offer flash sales without triggering price wars (since in principle airlines don't have access to their competitors' private fares).
-    * Public / published - A fare available to all consumers.
  * GDS - Global distribution system, such as Sabre or Travelport.
- * Post-booking - anything that happens after the reservation is created.
- * Post-ticketing - anything that happens after a ticket is issued.
- * Shop -
+ * LCC - Low Cost Carrier. An airline focused on providing cheap tickets with as few comforts as possible
+ * Segment - A segment, with some exception (hidden stops), corresponds to a single flight. One or more segments form a leg in a trip (A --> B), with one or more legs forming a complete trip
+ * Shop - A shop corresponds to a request sent to a GDS for information about flights. Shops are an important signal of demand/offer for each trip.
  * Stops
     * Connection - A stop that requires a passenger to change planes before continuing to the ultimate destination.
     * Direct - A flight that makes one or more stops at an intermediate airport between the departure and destination airports, but keeps the same flight number and is unlikely to change planes. (adapted from Sabre)
@@ -60,8 +59,7 @@ See also [ATPCO's glossary](https://www.atpco.net/glossary).
     * Segment - A flight from an origin airport to a destination airport. Can refer to a single takeoff/landing or multiple ones. The grouping is usually determined by airline operational, marketing, or partnership reasons.
     * Slice - A Hopper term for "leg".
     * Tech / Technical - a stop (flight landing and subsequent takeoff) in a segment's flight for refuelling or other technical reasons. Planned technical stops usually don't involve changing planes.
- * Supplier - Supplies the inventory for sale on a provider (GDS). Suppliers are the airlines (that sell fares) and hotels (that sell rooms).
- * Ticketing - The process of collecting payment for airfare through a settlement agency (ARC or BSP).
+ * Trip - A trip corresponds to the sum of flights linked to a single ticket. A trip can be round-trip (with two legs A --> B, B--> A), one-way (A --> B) or open-jaw (A-->B, C-->A) 
 
 ## List of schemas
 
@@ -82,15 +80,13 @@ See also [ATPCO's glossary](https://www.atpco.net/glossary).
 
 ### flight_schedules
 
- A table of past and future flight schedules, including their seat capacities and codes in a long table format. From Innovata.
+ A table of past and future flight schedules, including their seat capacities and codes in a long table format.
 
 Usage caveats:
 
 If a flight has codeshares, it will have a row for every flight number. E.g. if there is one codeshare, there will be two rows, one for the operating carrier number and another for the codeshare. Set codeshareIndicator = 0 to filter out codeshares to avoid duplicates
 
 If a flight has a hidden stop, it will have a row for all consecutive combinations of segment combinations. E.g. CX888 appears 3 times as HKG-JFK, HKG-YVR, and YVR-JFK as there is a hidden stop in YVR. Set stops = 0 to filter out flights with hidden stops to avoid duplicates
-
-Flight schedules are subject to change. Innovata sends schedules on an approximately 4 week basis. Each schedule only contains flights for the future, so there may be schedule changes that happened in the previous 4 weeks that are unaccounted for. Moreover, flights scheduled for the future may change in future schedules. received_date is the date that we received the final innovata schedule for the flight; if received_date is in the future, it means that future innovata schedules may change the current information. 
 
 **Partitioned By** : `date`
 
@@ -128,7 +124,8 @@ Basic metadata for hotels
 
 ### flight_trips
 
-Itineraries received in response to requests by Hopper on the behalf of our users.
+Itineraries received in response to requests by Hopper on the behalf of our users. A trip consist of 1 (if one-way), 2 (if round-trip or open-jaw) or more legs.
+Each leg is formed by 1 or more segments, each usually corresponding to a flight.
 
 `event.id` and `trip_index` together form a primary key that can be joined with `flight_segments`.
 
@@ -153,78 +150,79 @@ Itineraries received in response to requests by Hopper on the behalf of our user
 | `received_date` | `date` | Date the trip was received, in the ET time zone |
 | `trip_type` | `string` | Type of trip; one of `one_way`, `round_trip`, `open_jaw` |
 | `event_source` | `string` | The shopping provider system that generated these search results |
-| `fare.total_usd` | `double` | Total ticket price in USD, including all taxes and fees |
-| `fare.tax_usd` | `double` | Tax component of the ticket price |
-| `fare.surcharge_usd` | `double` | Surcharge component (identically zero) |
-| `fare.currency` | `string` | Currency the trip was originally priced in |
-| `fare.total` | `double` | Total ticket price in original `currency` units |
-| `fare.tax` | `double` | Tax amount in original currency |
-| `fare.surcharge` | `double` | Surcharge in original currency |
-| `fare.exchange_rate` | `double` | Exchange rate used for conversion to USD |
-| `fare.pax_type` | `string` | Code for passenger type used for quote, typically ADT for adult |
-| `fare.refundable` | `boolean` | Whether this ticket is refundable |
-| `fare.point_of_sale_country_code` | `string` | Country code for point of sale where ticket was priced |
-| `fare.validating_carrier` | `string` | Carrier code for the airline selling the ticket (not necessarily flying it) |
-| `fare.conversation_id` | `string` | Unique identifier for the search in the source system |
-| `outgoing.origin` | `string` | Three letter airport code like BOS for slice origination |
-| `outgoing.destination` | `string` | Three letter code like YUL for slice destination |
-| `outgoing.departure_odate` | `string` | Departure date in origin timezone in yyyy-mm-dd format |
-| `outgoing.departure_ms` | `long` | Departure time in epoch millis |
-| `outgoing.departure_day_of_week_mon1` | `integer` | Departing day of week in origin timezone, within Monday=1, Sunday=7 |
-| `outgoing.departure_tz_offset_ms` | `long` | Timezone offset in millis for origin |
-| `outgoing.departure_country_code` | `string` | Two letter ISO country code for origin |
-| `outgoing.departure_subdivision_code` | `string` | Three letter ISO 3166-2 code for subdivision (e.g. province or state) |
-| `outgoing.departure_currency_code` | `string` | Three letter ISO currency code for origin |
-| `outgoing.arrival_ddate` | `string` | Arrival date in destination timezone in yyyy-mm-dd format |
-| `outgoing.arrival_ms` | `long` | Arrival time in epoch millis |
-| `outgoing.arrival_day_of_week_mon1` | `integer` | Arrival day of week at destination |
-| `outgoing.arrival_tz_offset_ms` | `long` | Timezone offset in millis at destination |
-| `outgoing.arrival_country_code` | `string` |  |
-| `outgoing.arrival_subdivision_code` | `string` |  |
-| `outgoing.arrival_currency_code` | `string` |  |
-| `outgoing.layovers` | `array` | List of layover airport codes |
-| `outgoing.marketing_carriers` | `array` | List of marketing carriers, the airlines advertised to the customer, e.g. via codeshare |
-| `outgoing.operating_carriers` | `array` | List of operating carriers, the airlines that actually fly the plane |
-| `outgoing.duration_minutes` | `integer` | Total length of travel (including layovers) in minutes |
-| `outgoing.stops` | `integer` | Number of stops for the slice |
-| `returning.origin` | `string` | Three letter airport code like BOS for slice origination |
-| `returning.destination` | `string` | Three letter code like YUL for slice destination |
-| `returning.departure_odate` | `string` | Departure date in origin timezone in yyyy-mm-dd format |
-| `returning.departure_ms` | `long` | Departure time in epoch millis |
-| `returning.departure_day_of_week_mon1` | `integer` | Departing day of week in origin timezone, within Monday=1, Sunday=7 |
-| `returning.departure_tz_offset_ms` | `long` | Timezone offset in millis for origin |
-| `returning.departure_country_code` | `string` | Two letter ISO country code for origin |
-| `returning.departure_subdivision_code` | `string` |  |
-| `returning.departure_currency_code` | `string` | Three letter ISO currency code for origin |
-| `returning.arrival_ddate` | `string` | Arrival date in destination timezone in yyyy-mm-dd format |
-| `returning.arrival_ms` | `long` | Arrival time in epoch millis |
-| `returning.arrival_day_of_week_mon1` | `integer` | Arrival day of week at destination |
-| `returning.arrival_tz_offset_ms` | `long` | Timezone offset in millis at destination |
-| `returning.arrival_country_code` | `string` |  |
-| `returning.arrival_subdivision_code` | `string` |  |
-| `returning.arrival_currency_code` | `string` |  |
-| `returning.layovers` | `array` | List of layover airport codes |
-| `returning.marketing_carriers` | `array` | List of marketing carriers, the airlines advertised to the customer, e.g. via codeshare |
-| `returning.operating_carriers` | `array` | List of operating carriers, the airlines that actually fly the plane |
-| `returning.duration_minutes` | `integer` | Total length of travel (including layovers) in minutes |
-| `returning.stops` | `integer` | Number of stops for the slice |
-| `query.origin_type` | `string` | Type for origin, either `airport` or `city` |
-| `query.origin` | `string` | Origin code, e.g. BOS or YMQ |
-| `query.destination_type` | `string` |  |
-| `query.destination` | `string` |  |
-| `query.departure_date` | `string` | Departure date |
-| `query.return_date` | `string` |  |
-| `cities.origin` | `string` | Origin for outbound |
-| `cities.destination` | `string` | Destination for outbound |
-| `cities.return_origin` | `string` | Origin for returning (typically same as `destination`) |
-| `cities.return_destination` | `string` | Destination for returning (typically same as `origin`) |
-| `cities.same_origin` | `boolean` | Whether slices coincide at origin |
-| `cities.same_destination` | `boolean` | Whether slices coincide at destination |
-| `cities.is_roundtrip` | `boolean` |  |
+| `fare_total_usd` | `double` | Total ticket price in USD, including all taxes and fees |
+| `fare_tax_usd` | `double` | Tax component of the ticket price |
+| `fare_surcharge_usd` | `double` | Surcharge component (identically zero) |
+| `fare_currency` | `string` | Currency the trip was originally priced in |
+| `fare_total` | `double` | Total ticket price in original `currency` units |
+| `fare_tax` | `double` | Tax amount in original currency |
+| `fare_surcharge` | `double` | Surcharge in original currency |
+| `fare_exchange_rate` | `double` | Exchange rate used for conversion to USD |
+| `fare_pax_type` | `string` | Code for passenger type used for quote, typically ADT for adult |
+| `fare_refundable` | `boolean` | Whether this ticket is refundable |
+| `fare_point_of_sale_country_code` | `string` | Country code for point of sale where ticket was priced |
+| `fare_validating_carrier` | `string` | Carrier code for the airline selling the ticket (not necessarily flying it) |
+| `fare_conversation_id` | `string` | Unique identifier for the search in the source system |
+| `outgoing_origin` | `string` | Three letter airport code like BOS for slice origination |
+| `outgoing_destination` | `string` | Three letter code like YUL for slice destination |
+| `outgoing_departure_odate` | `string` | Departure date in origin timezone in yyyy-mm-dd format |
+| `outgoing_departure_ms` | `long` | Departure time in epoch millis |
+| `outgoing_departure_day_of_week_mon1` | `integer` | Departing day of week in origin timezone, within Monday=1, Sunday=7 |
+| `outgoing_departure_tz_offset_ms` | `long` | Timezone offset in millis for origin |
+| `outgoing_departure_country_code` | `string` | Two letter ISO country code for origin |
+| `outgoing_departure_subdivision_code` | `string` | Three letter ISO 3166-2 code for subdivision (e_g_ province or state) |
+| `outgoing_departure_currency_code` | `string` | Three letter ISO currency code for origin |
+| `outgoing_arrival_ddate` | `string` | Arrival date in destination timezone in yyyy-mm-dd format |
+| `outgoing_arrival_ms` | `long` | Arrival time in epoch millis |
+| `outgoing_arrival_day_of_week_mon1` | `integer` | Arrival day of week at destination |
+| `outgoing_arrival_tz_offset_ms` | `long` | Timezone offset in millis at destination |
+| `outgoing_arrival_country_code` | `string` |  |
+| `outgoing_arrival_subdivision_code` | `string` |  |
+| `outgoing_arrival_currency_code` | `string` |  |
+| `outgoing_layovers` | `array` | List of layover airport codes |
+| `outgoing_marketing_carriers` | `array` | List of marketing carriers, the airlines advertised to the customer, e_g_ via codeshare |
+| `outgoing_operating_carriers` | `array` | List of operating carriers, the airlines that actually fly the plane |
+| `outgoing_duration_minutes` | `integer` | Total length of travel (including layovers) in minutes |
+| `outgoing_stops` | `integer` | Number of stops for the slice |
+| `returning_origin` | `string` | Three letter airport code like BOS for slice origination |
+| `returning_destination` | `string` | Three letter code like YUL for slice destination |
+| `returning_departure_odate` | `string` | Departure date in origin timezone in yyyy-mm-dd format |
+| `returning_departure_ms` | `long` | Departure time in epoch millis |
+| `returning_departure_day_of_week_mon1` | `integer` | Departing day of week in origin timezone, within Monday=1, Sunday=7 |
+| `returning_departure_tz_offset_ms` | `long` | Timezone offset in millis for origin |
+| `returning_departure_country_code` | `string` | Two letter ISO country code for origin |
+| `returning_departure_subdivision_code` | `string` |  |
+| `returning_departure_currency_code` | `string` | Three letter ISO currency code for origin |
+| `returning_arrival_ddate` | `string` | Arrival date in destination timezone in yyyy-mm-dd format |
+| `returning_arrival_ms` | `long` | Arrival time in epoch millis |
+| `returning_arrival_day_of_week_mon1` | `integer` | Arrival day of week at destination |
+| `returning_arrival_tz_offset_ms` | `long` | Timezone offset in millis at destination |
+| `returning_arrival_country_code` | `string` |  |
+| `returning_arrival_subdivision_code` | `string` |  |
+| `returning_arrival_currency_code` | `string` |  |
+| `returning_layovers` | `array` | List of layover airport codes |
+| `returning_marketing_carriers` | `array` | List of marketing carriers, the airlines advertised to the customer, e_g_ via codeshare |
+| `returning_operating_carriers` | `array` | List of operating carriers, the airlines that actually fly the plane |
+| `returning_duration_minutes` | `integer` | Total length of travel (including layovers) in minutes |
+| `returning_stops` | `integer` | Number of stops for the slice |
+| `query_origin_type` | `string` | Type for origin, either `airport` or `city` |
+| `query_origin` | `string` | Origin code, e_g_ BOS or YMQ |
+| `query_destination_type` | `string` |  |
+| `query_destination` | `string` |  |
+| `query_departure_date` | `string` | Departure date |
+| `query_return_date` | `string` |  |
+| `cities_origin` | `string` | Origin for outbound |
+| `cities_destination` | `string` | Destination for outbound |
+| `cities_return_origin` | `string` | Origin for returning (typically same as `destination`) |
+| `cities_return_destination` | `string` | Destination for returning (typically same as `origin`) |
+| `cities_same_origin` | `boolean` | Whether slices coincide at origin |
+| `cities_same_destination` | `boolean` | Whether slices coincide at destination |
+| `cities_is_roundtrip` | `boolean` |  |
 
 ### flight_segments
 
-All segments (legs) within each trip of a shop, joinable with `flight_trips` using the combination of `trip_index` and `event.id` as a foreign key.
+All segments within each trip of a shop, joinable with `flight_trips` using the combination of `trip_index` and `event.id` as a foreign key.
+A segment corresponds, with some technical exceptions, to a single flight. One or more segments form the leg of a trip (e.g Montreal-Quito). One or more legs form a full trip.
 
 **Partitioned By** : `received_date`, `trip_type`
 
@@ -254,6 +252,34 @@ All segments (legs) within each trip of a shop, joinable with `flight_trips` usi
 | `event.source` | `string` | The shopping provider system that generated these search results |
 | `cities.origin` | `string` |  |
 | `cities.destination` | `string` |  |
+
+### flight_shops
+
+Subset of best trips from each shop. A shop corresponds to a request sent to a GDS for information about flights. Shops are an important signal of demand/offer for each trip.
+
+**Partitioned By** : `received_date`, `trip_type`
+
+| Columns | Data Type | Description |
+|-|-|-|
+| `origin` | `string` |  |
+| `destination` | `string` |  |
+| `outgoing_departure_odate` | `string` | Departure date in origin timezone in yyyy-mm-dd format |
+| `departure_date` | `string` | Departure date in origin timezone in yyyy-mm-dd format |
+| `outgoing.duration_minutes` | `integer` | Total length of travel (including layovers?) in minutes |
+| `outgoing.departure_day_of_week` | `integer` | Departing day of week in origin timezone, within Monday=1, Sunday=7 |
+| `returning.departure_odate` | `string` | Departure date in origin timezone in yyyy-mm-dd format |
+| `returning.duration_minutes` | `integer` | Total length of travel (including layovers?) in minutes |
+| `returning.departure_day_of_week` | `integer` | departure day of week at destination, monday being 1|
+| `non_stop` | `boolean` | True if the trip does not include a lay-over |
+| `total_usd` | `double` | Total ticket price in USD, including all taxes and fees |
+| `num_trips` | `integer` | Number of trips for that particular shop |
+| `advance` | `integer` | Days before trip, in origin timezone |
+| `los` | `integer` | Number of nights stay involved in the trip, same day return is 0 |
+| `includes_saturday_night_stay` | `boolean` | Does the trip include a Saturday night stay? |
+| `source` | `string` | Source of the shop request (typically a GDS, either Sabre or Travelport) |
+| `received_date` | `date` | Date the trip was received in Hopper TZ (partition) |
+| `trip_type` | `string` | Type of trip, one of `one_way`, `round_trip`, `open_jaw` |
+| `filter` | `filter` | filter buckets the trip is falling into. Should look like, for instance, And(ShortLayover,NoLCC), meaning "has a short layover and does not use a Low Cost Carrier |
 
 # GCP bucket structure
 
@@ -295,21 +321,6 @@ A .5% sample of our data, from june 2018 to july 2019, with all trips Europe-->C
 
 ## Single Origin 2017-2019
 A .1% sample of our data, from june 2017 to july 2019, with JFK airport as the origin
-
-# Getting Started
-
-* The captain of the team should receive an invite e-mail, which will provide access to the TravelHacks GCP organization
-* The captain should then create a project for the team, following instructions [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
-* From that point there are several possible options to the team. You should decide if you want to use BigQuery, use a Jupyter notebook, create a Dataproc cluster, etc.
-Don't hesitate to call for help in case of [overchoice paralysis](https://en.wikipedia.org/wiki/Overchoice) 
-* It is likely that you will want to run code locally using the GCP API, which will require valid credentials. In that case, see next section
-
-## Using GCP Credentials locally
-
-* Create a service account for your project, and [give it the correct permissions](https://cloud.google.com/iam/docs/creating-managing-service-accounts)
-* Download the service account's credential json (this should be an available option when creating the service account)
-* Export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials/json
-* You should now be able to use the GCP API with any of their available clients
 
 # Resources
 

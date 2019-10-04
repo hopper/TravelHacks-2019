@@ -79,8 +79,8 @@ if __name__ == '__main__':
     app.config['replay_timestamp'] = replay_timestamp
     app.config['start_timestamp'] = start_timestamp
 
-    segments_df =  databuild_gcp.query_gcp_flight_segments(replay_timestamp)
-    segments_df.to_json('segments_production.json', orient='records')
+    #segments_df =  databuild_gcp.query_gcp_flight_segments(replay_timestamp)
+    #segments_df.to_json('segments_production.json', orient='records')
 
     readSegments()
 
