@@ -7,6 +7,7 @@
      * [hotel_geo_metadata](#hotel_geo_metadata)
      * [flight_trips](#flight_trips)
      * [flight_segments](#flight_segments)
+* [GCP bucket structure](#GCP_bucket_structure)
 * [List of data slices](#List-of-data-slices)
 * [Getting Started](#Getting-Started)
 * [Resources](#resources)
@@ -254,10 +255,25 @@ All segments (legs) within each trip of a shop, joinable with `flight_trips` usi
 | `cities.origin` | `string` |  |
 | `cities.destination` | `string` |  |
 
+# GCP bucket structure
+
+All the available data can be found in the gs://travelhacks-datasets GCP bucket, which is located in the travelhacks-data project. This data is structure as follows:
+
+/ --- common --- airports         # these tables are small, so you can safely use them as-is
+            |--- hotel_geo_info   
+            |--- flight_schedules
+  --- raw_datasets # raw dataset (as parquet) for 2017-2019 (large tables, do not use directly)
+  --- raw_datasets_large # raw dataset (as parquet) for 2018-2019  (large tables, do not use directly)
+  --- day (single day dataslice)
+  --- all_2_years # 2017-2019 dataslice
+  --- all_1_year # 2018-2019 dataslice
+  --- other dataslices ...
+  --- ...
+
 # List of data slices
 
 We offer a series of subsets of our dataset, which are easier to digest and should be easier to use. 
-In order to maximize the number of iterations, we recommend using one of these slices
+In order to maximize the number of iterations, we recommend using one of these slices.
 
 ## Single Day
 A single day of our data, with a 20% sampling rate. This is very close to an actual "day in the life" at Hopper, and is recommended to simulate real-time applications
