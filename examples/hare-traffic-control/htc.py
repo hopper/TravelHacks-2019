@@ -73,8 +73,8 @@ if __name__ == '__main__':
 
     time_delta = record_start - current_start
 
-    # segments_df =  databuild_gcp.query_gcp_flight_segments(record_start)
-    # segments_df.to_json('segments_production.json', orient='records')
+    segments_df =  databuild_gcp.query_gcp_flight_segments(record_start)
+    segments_df.to_json('segments_production.json', orient='records')
 
     readSegments()
 
