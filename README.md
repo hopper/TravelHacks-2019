@@ -304,20 +304,23 @@ In order to maximize the number of iterations, we recommend using one of these s
 ## Single Day
 A single day of our data, with a 20% sampling rate. This is very close to an actual "day in the life" at Hopper, and is recommended to simulate real-time applications
 
-## All 
+## All 2017-2019
 A sparse sample (.1%) of our data from june 2017 to july 2019. Useful for analysis and predictions.
 
 ## All 2018-2019
 A less sparse (.5%) sample of our data, with all traffic from june 2018 to july 2019
 
-## Montreal 
+## Montreal 2018-2019
 A less sparse (.5%) sample of our data from june 2018 to july 2019, for all trips with YUL as origin or destination
 
 ## US Internal 2018-2019
 A .5% sample of our data, from june 2018 to july 2019, with all U.S. internal traffic
 
+## Canada Internal 2018-2019
+A .5% sample of our data, from june 2017 to july 2019, with all Canadian internal traffic
+
 ## E.U.-Canada 2018-2019
-A .5% sample of our data, from june 2018 to july 2019, with all trips Europe-->Canada or Canada-->Europe
+A .5% sample of our data, from june 2017 to july 2019, with all trips Europe-->Canada or Canada-->Europe
 
 ## Single Origin 2017-2019
 A .1% sample of our data, from june 2017 to july 2019, with JFK airport as the origin

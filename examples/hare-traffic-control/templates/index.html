@@ -13,11 +13,6 @@
   <svg></svg>
   <div class="counters">
     <span><span class="counter-section">✈️</span><label>Flying</label><span id='flying-counter' class="odometer">0</span></span>
-    <span><label>Tickets today</label><span id='airtix-counter' class="odometer">0</span></span>
-    <span><label>GBV</label><span id='airgbv-counter' class="odometer ">0</span></span>
-    <span><span class="counter-section">🏨</span><label>Staying</label><span id="stays-counter" class="odometer">0</span></span>
-    <span><label>Bookings today</label><span id='bookings-counter' class="odometer">0</span></span>
-    <span><label>GBV</label><span id='hotelgbv-counter' class="odometer">0</span></span>
   </div>
 </div>
 <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -29,7 +24,7 @@ window.odometerOptions = {format: '(,ddd)'};
 
 var width = document.getElementById('body').clientWidth,
     height = width/2,
-    jetSize = width/192,
+    jetSize = width/400,
     fadeDuration = 250,
     intFmt = d3.format(',.0f'),
     usdFmt = d3.format('$,.0f');
@@ -92,11 +87,10 @@ svg.append('rect')
   .attr('width', width)
   .attr('height', height);
 
-var time_delta = {{ data.replay_timestamp }} - {{ data.start_timestamp }};
-
-console.log("replay_timestamp:"+ {{ data.replay_timestamp }})
-console.log("start_timestamp:"+ {{ data.start_timestamp }})
-console.log("time_delta: "+ time_delta)
+var time_delta = {{ data.record_start }} - {{ data.current_start }};
+var current_start = {{ data.current_start }};
+var record_start = {{ data.record_start }};
+var replay_speed = {{ data.replay_speed}};
 
 Promise.all(['/static/airports.json'].map(url => d3.json(url)))
   .then(data => {
@@ -115,7 +109,6 @@ Promise.all(['/static/airports.json'].map(url => d3.json(url)))
     Promise.all(['/api/v1/segments'].map(url => d3.json(url)))
       .then(data => {
         var [rawSegments] = data;
-        console.log(rawSegments)
 
         rawSegments.forEach(function(s) {
           var o = airportLookup[s.origin],
@@ -149,7 +142,7 @@ Promise.all(['/static/airports.json'].map(url => d3.json(url)))
   }
 
   updateSegments();
-  setInterval(updateSegments, 10*60*1000);
+  setInterval(updateSegments, Math.floor(10*60*1000/replay_speed));
 
   var night = svg.append('g')
 
@@ -174,26 +167,27 @@ Promise.all(['/static/airports.json'].map(url => d3.json(url)))
     ixform = 0;
 
   redraw();
-  setInterval(redraw, 4000);
+  setInterval(redraw, Math.floor(4000/replay_speed));
 
   function redraw() {
-    var replay_time = Math.floor((+new Date() + time_delta*1000)/1000),
+    var time_in_replay = Math.floor((+new Date() + time_delta*1000)/1000)
+
+    var time_with_speed = record_start + (time_in_replay - record_start)*replay_speed
+
       tipevent = null;
 
-    console.log(replay_time)
-
     var activeSegments = segments
-        .filter(d => d.departure_timestamp <= replay_time && replay_time <= d.arrival_timestamp);
+        .filter(d => d.departure_timestamp <= time_with_speed && time_with_speed <= d.arrival_timestamp);
 
-    console.log("number of active segments" + activeSegments.length)
+    console.log("number of active segments: " + activeSegments.length)
 
     activeSegments.forEach(d => {
-      d.percent = (replay_time - d.departure_timestamp) / (d.arrival_timestamp - d.departure_timestamp);
+      d.percent = (time_with_speed - d.departure_timestamp) / (d.arrival_timestamp - d.departure_timestamp);
     })
 
     night
       .selectAll('path')
-      .datum(illuminated.center(antipode(solarPosition(replay_time))))
+      .datum(illuminated.center(antipode(solarPosition(time_with_speed))))
       .attr("d", path);
 
     var join;
@@ -331,7 +325,7 @@ function jetTransform(segment) {
 
     return "translate(" + p[0] + ',' + p[1] + ")"
     + " rotate(" + heading * degrees + ")"
-    + " scale(" + Math.pow(segment.pax, 1/9) + ")"
+    + " scale(" + Math.pow(segment.pax, 1/3) + ")"
     + " translate(" + -jetSize/2 + ',' + -jetSize/2 + ")";
 }
 

@@ -108,7 +108,7 @@ def table_exist(client, project_id, dataset_id, table_id):
     return False
 
 def add_to_dataset(client, dataset_id, table_name):
-    table_uri = 'gs://travelhacks-datasets/all/flight_segments/*.avro'
+    table_uri = 'gs://travelhacks-datasets/all_2017_2019/flight_segments/*.avro'
     table_id = table_name
 
     job_config = bigquery.LoadJobConfig()
